@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<content xmlns:j="http://www.jahia.org/jahia/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
+    <modules jcr:primaryType="jnt:modules">
+        <v8-modules-helper j:dependencies="default serverSettings"
+                         j:installedModules="v8-modules-helper"
+                         j:modulePriority="0"
+                         j:moduleType="module"
+                         j:title="V8 Modules Helper"
+                         jcr:primaryType="jnt:module">
+            <portlets jcr:primaryType="jnt:portletFolder"/>
+            <files jcr:primaryType="jnt:folder"/>
+            <contents jcr:primaryType="jnt:contentFolder"/>
+            <templates j:rootTemplatePath="/" jcr:primaryType="jnt:templatesFolder">
+                <files jcr:primaryType="jnt:folder">
+                    <serveradmin jcr:primaryType="jnt:folder">
+                        <v8ModulesHelper.png j:height="16"
+                                            j:width="16"
+                                            jcr:mixinTypes="jmix:image"
+                                            jcr:primaryType="jnt:file">
+                            <jcr:content jcr:mimeType="image/png" jcr:primaryType="jnt:resource"/>
+                        </v8ModulesHelper.png>
+                    </serveradmin>
+                </files>
+                <contents jcr:primaryType="jnt:contentFolder"/>
+                <server-settings-base j:view="serverSettings"
+                                      jcr:mixinTypes="jmix:useUILocale"
+                                      jcr:primaryType="jnt:template">
+                    <system-components j:hiddenTemplate="false"
+                                       j:icon="/modules/serverSettings/templates/files/serveradmin/system_x0020_components/system_components.png"
+                                       j:titleKey="serverSettings.systemComponents"
+                                       jcr:mixinTypes="jmix:rbTitle"
+                                       jcr:primaryType="jnt:template">
+                        <v8ModulesHelper j:applyOn="jnt:globalSettings"
+                                        j:defaultTemplate="false"
+                                        j:hiddenTemplate="false"
+                                        j:icon="/modules/v8-modules-helper/templates/files/serveradmin/v8ModulesHelper.png"
+                                        j:requiredPermissionNames="administrationAccess"
+                                        j:titleKey="modules-helper.title"
+                                        jcr:mixinTypes="jmix:rbTitle"
+                                        jcr:primaryType="jnt:contentTemplate">
+                            <pagecontent jcr:primaryType="jnt:contentList">
+                                <v8-modules-helper jcr:primaryType="jnt:modulesHelper"/>
+                            </pagecontent>
+                        </v8ModulesHelper>
+                    </system-components>
+                </server-settings-base>
+            </templates>
+        </v8-modules-helper>
+    </modules>
+</content>
