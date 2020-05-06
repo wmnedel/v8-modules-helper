@@ -141,9 +141,9 @@ public class ModulesMigrationHandler {
                 for (ExtendedNodeType moduleNodeType : it) {
                     String[] declaredSupertypeNamesList = moduleNodeType.getDeclaredSupertypeNames();
                     for (String supertypeName : declaredSupertypeNamesList) {
-                        if (supertypeName.toLowerCase().equalsIgnoreCase("jmix:cmcontentreedisplayable")) {
+
+                        if (supertypeName.trim().equals("jmix:cmContentTreeDisplayable")) {
                             nodeTypesWithLegacyJmix.add(moduleNodeType.getName());
-                            break;
                         }
                     }
                 }
