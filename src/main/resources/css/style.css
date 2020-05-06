@@ -12,3 +12,12 @@
 .loading-spinner{
     display: none;
 }
+
+a {
+    text-decoration: underline;
+}
+
+.serverId {
+    margin: 15px;
+    font-size: medium;
+}
