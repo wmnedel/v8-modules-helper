@@ -23,6 +23,14 @@
 <template:addResources type="javascript" resources="spinner.js"/>
 <template:addResources type="css" resources="style.css"/>
 
+<%
+    request.setAttribute("licenseId",org.jahia.modules.v8moduleshelper.utils.LicenseUtils.getLicenseId());
+%>
+<div class="box-1">
+    <p class="serverId"><b>Server id:</b> ${licenseId}</p>
+    <p class="serverId"><a href="https://id.jahia.com/licenses?licenseId=${licenseId}&licenseVersion=8.0.0.0">To get free or dev V8 license</a></p>
+    <p class="serverId"><a href="https://support.jahia.com/secure/Dashboard.jspa">To contact support for production license</a></p>
+</div>
 <div class="box-1">
     <form:form id="form1" modelAttribute="environmentInfo" method="post">
         <%@ include file="validation.jspf" %>
