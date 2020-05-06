@@ -82,7 +82,5 @@
         <span> Processing, please wait...</span>
     </div>
 
-    <c:set var="redirectUrl" value="${renderContext.mainResource.node.path}.html" scope="session" />
-
 </div>
 
