@@ -12,7 +12,7 @@
         <thead>
         <tr>
             <th>Name</th>
-            <th>Version Id</th>
+            <th>Version</th>
             <th>Group ID</th>
             <th>jmix:cmContentTreeDisplayable</th>
             <th>serverSettings</th>
