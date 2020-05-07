@@ -13,6 +13,7 @@ import org.jahia.services.content.JCRNodeWrapper;
 import org.jahia.services.content.JCRSessionFactory;
 import org.jahia.services.content.JCRSessionWrapper;
 import org.jahia.services.content.nodetypes.ExtendedNodeType;
+import org.jahia.services.content.nodetypes.ExtendedPropertyDefinition;
 import org.jahia.services.content.nodetypes.NodeTypeRegistry;
 import org.jahia.services.notification.HttpClientService;
 import org.json.JSONArray;
@@ -29,10 +30,8 @@ import org.springframework.webflow.execution.RequestContext;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**    
  * Class responsible to run the migrations and export results to webflow
@@ -90,8 +89,10 @@ public class ModulesMigrationHandler {
                 }
             }
         } catch (JSONException e) {
-            setErrorMessage("Cannot load information from Jahia Store. Please consider including Jahia modules in the report");
-            logger.error("Error reading information from Jahia Store. Please consider including Jahia modules in the report");
+            setErrorMessage("Cannot load information from Jahia Store."
+                    + " Please consider including Jahia modules in the report");
+            logger.error("Error reading information from Jahia Store. "
+                    + "Please consider including Jahia modules in the report");
             logger.error(e.toString());
         }
     }
@@ -103,7 +104,8 @@ public class ModulesMigrationHandler {
      */
     private void getLocalModules(boolean onlyStartedModules, boolean removeJahiaModules) {
 
-        Map<Bundle, JahiaTemplatesPackage> installedModules = ServicesRegistry.getInstance().getJahiaTemplateManagerService().getRegisteredBundles();
+        Map<Bundle, JahiaTemplatesPackage> installedModules = ServicesRegistry.getInstance()
+                .getJahiaTemplateManagerService().getRegisteredBundles();
 
         for (Map.Entry<Bundle, JahiaTemplatesPackage> module : installedModules.entrySet()) {
 
@@ -128,22 +130,44 @@ public class ModulesMigrationHandler {
 
                 if (removeJahiaModules == true
                         && moduleGroupId.equalsIgnoreCase("org.jahia.modules")
-                        && (jahiaStoreModules.contains(moduleName.toLowerCase()) || modulescmURI.contains("scm:git:git@github.com:jahia/"))) {
+                        && (jahiaStoreModules.contains(moduleName.toLowerCase())
+                            || modulescmURI.contains("scm:git:git@github.com:jahia/"))) {
                     continue;
                 }
 
                 List<String> nodeTypesWithLegacyJmix = new ArrayList<String>();
                 List<String> siteSettingsPaths = new ArrayList<String>();
                 List<String> serverSettingsPaths = new ArrayList<String>();
+                List<String> nodeTypesWithDate = new ArrayList<String>();
                 boolean hasSpringBean = false;
 
                 NodeTypeRegistry.JahiaNodeTypeIterator it = NodeTypeRegistry.getInstance().getNodeTypes(moduleName);
                 for (ExtendedNodeType moduleNodeType : it) {
+                    String nodeTypeName = moduleNodeType.getName();
                     String[] declaredSupertypeNamesList = moduleNodeType.getDeclaredSupertypeNames();
+
+                    ExtendedPropertyDefinition[] allPropertyDefinitions = moduleNodeType.getPropertyDefinitions();
+
+                    for (ExtendedPropertyDefinition propertyDefinition : allPropertyDefinitions) {
+                        String formatValue = propertyDefinition.getSelectorOptions().get("format");
+
+                        if (formatValue != null) {
+                            try {
+                                SimpleDateFormat temp = new SimpleDateFormat(formatValue);
+
+                                if (nodeTypesWithDate.contains(nodeTypeName) == false) {
+                                    nodeTypesWithDate.add(nodeTypeName);
+                                }
+                            } catch (Exception e) {
+                                logger.debug(String.format("Pattern %s is not a Date", formatValue));
+                            }
+                        }
+                    }
+
                     for (String supertypeName : declaredSupertypeNamesList) {
 
                         if (supertypeName.trim().equals("jmix:cmContentTreeDisplayable")) {
-                            nodeTypesWithLegacyJmix.add(moduleNodeType.getName());
+                            nodeTypesWithLegacyJmix.add(nodeTypeName);
                         }
                     }
                 }
@@ -151,37 +175,45 @@ public class ModulesMigrationHandler {
                 String modulePath = String.format("AND ISDESCENDANTNODE (template, '/modules/%s/%s/')",
                         moduleName, moduleVersion.replace(".SNAPSHOT","-SNAPSHOT"));
 
-                final String siteSelect = "SELECT * FROM [jnt:template] As template WHERE template.[j:view] = 'siteSettings' ";
-                final String serverSelect = "SELECT * FROM [jnt:template] As template WHERE template.[j:view] = 'serverSettings' ";
+                final String siteSelect =
+                        "SELECT * FROM [jnt:template] As template WHERE template.[j:view] = 'siteSettings' ";
+                final String serverSelect =
+                        "SELECT * FROM [jnt:template] As template WHERE template.[j:view] = 'serverSettings' ";
 
                 /* Check for modules with siteSettings view */
                 try {
-                    JCRSessionWrapper jcrNodeWrapper = JCRSessionFactory.getInstance().getCurrentSystemSession(Constants.EDIT_WORKSPACE, null, null);
+                    JCRSessionWrapper jcrNodeWrapper = JCRSessionFactory.getInstance()
+                            .getCurrentSystemSession(Constants.EDIT_WORKSPACE, null, null);
 
-                    NodeIterator iterator = jcrNodeWrapper.getWorkspace().getQueryManager().createQuery(siteSelect + modulePath, Query.JCR_SQL2).execute().getNodes();
+                    NodeIterator iterator = jcrNodeWrapper.getWorkspace().getQueryManager()
+                            .createQuery(siteSelect + modulePath, Query.JCR_SQL2).execute().getNodes();
                     if (iterator.hasNext()) {
                         final JCRNodeWrapper node = (JCRNodeWrapper) iterator.nextNode();
                         siteSettingsPaths.add(node.getPath());
                     }
 
                 } catch (RepositoryException e) {
-                    logger.error(String.format("Cannot get JCR information from module %s/%s", moduleName, moduleVersion));
+                    logger.error(String.format("Cannot get JCR information from module %s/%s",
+                            moduleName, moduleVersion));
                     logger.error(e.toString());
                     siteSettingsPaths.add("JCR Error");
                 }
 
                 /* Check for modules with serverSettings view */
                 try {
-                    JCRSessionWrapper jcrNodeWrapper = JCRSessionFactory.getInstance().getCurrentSystemSession(Constants.EDIT_WORKSPACE, null, null);
+                    JCRSessionWrapper jcrNodeWrapper = JCRSessionFactory.getInstance()
+                            .getCurrentSystemSession(Constants.EDIT_WORKSPACE, null, null);
 
-                    NodeIterator iterator = jcrNodeWrapper.getWorkspace().getQueryManager().createQuery(serverSelect + modulePath, Query.JCR_SQL2).execute().getNodes();
+                    NodeIterator iterator = jcrNodeWrapper.getWorkspace().getQueryManager()
+                            .createQuery(serverSelect + modulePath, Query.JCR_SQL2).execute().getNodes();
                     if (iterator.hasNext()) {
                         final JCRNodeWrapper node = (JCRNodeWrapper) iterator.nextNode();
                         serverSettingsPaths.add(node.getPath());
                     }
 
                 } catch (RepositoryException e) {
-                    logger.error(String.format("Cannot get JCR information from module %s/%s", moduleName, moduleVersion));
+                    logger.error(String.format("Cannot get JCR information from module %s/%s",
+                            moduleName, moduleVersion));
                     logger.error(e.toString());
                     serverSettingsPaths.add("JCR Error");
                 }
@@ -200,13 +232,16 @@ public class ModulesMigrationHandler {
                     }
                 }
 
-                logger.info(String.format("moduleName=%s moduleVersion=%s moduleGroupId=%s nodeTypesMixin=%s serverSettingsPaths=%s siteSettingsPaths=%s useSpring=%s",
+                logger.info(String.format("moduleName=%s moduleVersion=%s moduleGroupId=%s "
+                                + "nodeTypesMixin=%s serverSettingsPaths=%s siteSettingsPaths=%s "
+                                + "nodeTypesDate=%s useSpring=%s",
                         moduleName,
                         moduleVersion,
                         moduleGroupId,
                         nodeTypesWithLegacyJmix.toString(),
                         serverSettingsPaths.toString(),
                         siteSettingsPaths.toString(),
+                        nodeTypesWithDate.toString(),
                         hasSpringBean));
 
                 ResultMessage resultMessage = new ResultMessage(moduleName,
@@ -215,6 +250,7 @@ public class ModulesMigrationHandler {
                         nodeTypesWithLegacyJmix.toString(),
                         serverSettingsPaths.toString(),
                         siteSettingsPaths.toString(),
+                        nodeTypesWithDate.toString(),
                         hasSpringBean);
 
                 this.resultReport.add(resultMessage);

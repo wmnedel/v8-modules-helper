@@ -7,9 +7,10 @@ public class ResultMessage implements Serializable {
     String moduleName;
     String moduleVersion;
     String moduleGroupId;
-    String nodeTypes;
+    String nodeTypesMixin;
     String serverSettings;
     String siteSettings;
+    String nodeTypesDate;
     boolean hasSpringBean;
 
     private static final long serialVersionUID = -6552128415414065542L;
@@ -20,18 +21,23 @@ public class ResultMessage implements Serializable {
     public ResultMessage(String moduleName,
                          String moduleVersion,
                          String moduleGroupId,
-                         String nodeTypes,
+                         String nodeTypesMixin,
                          String serverSettings,
                          String siteSettings,
+                         String nodeTypesDate,
                          boolean hasSpringBean) {
         this.moduleName = moduleName;
         this.moduleVersion = moduleVersion;
         this.moduleGroupId = moduleGroupId;
-        this.nodeTypes = nodeTypes;
+        this.nodeTypesMixin = nodeTypesMixin;
         this.serverSettings = serverSettings;
         this.siteSettings = siteSettings;
+        this.nodeTypesDate = nodeTypesDate;
         this.hasSpringBean = hasSpringBean;
     }
+    public String getNodeTypesDate() { return nodeTypesDate; }
+
+    public void setNodeTypesDate(String nodeTypesDate) { this.nodeTypesDate = nodeTypesDate; }
 
     public String getModuleName() {
         return moduleName;
@@ -58,11 +64,11 @@ public class ResultMessage implements Serializable {
     }
 
     public String getNodeTypes() {
-        return nodeTypes;
+        return nodeTypesMixin;
     }
 
     public void setNodeTypes(String nodeTypes) {
-        this.nodeTypes = nodeTypes;
+        this.nodeTypesMixin = nodeTypes;
     }
 
     public String getServerSettings() {

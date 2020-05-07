@@ -17,6 +17,7 @@
             <th>jmix:cmContentTreeDisplayable</th>
             <th>serverSettings</th>
             <th>siteSettings</th>
+            <th>Date format</th>
             <th>Spring</th>
         </tr>
         </thead>
@@ -28,6 +29,7 @@
                 <td>${module.nodeTypes}</td>
                 <td>${module.serverSettings}</td>
                 <td>${module.siteSettings}</td>
+                <td>${module.nodeTypesDate}</td>
                 <td>${module.hasSpringBean}</td>
             </tr>
         </c:forEach>
