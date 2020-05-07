@@ -69,8 +69,7 @@
         Spring 5.2 through Karaf feature, but this version is not used by Jahia itself.<br>
         If your modules still needs to use Spring 3.2, which is provided by Jahia core, then please enable the Bundle
         Activator in your pom.xml:<br><br>
-        &lt;require-capability&gt;osgi.extender;filter:=&quot;(osgi.extender=org.jahia.bundles.blueprint. extender.
-        config)&quot;&lt;/require-capability&gt;
+        &lt;require-capability&gt;osgi.extender;filter:=&quot;(osgi.extender=org.jahia.bundles.blueprint.extender.config)&quot;&lt;/require-capability&gt;
     </p>
 </div>
 
