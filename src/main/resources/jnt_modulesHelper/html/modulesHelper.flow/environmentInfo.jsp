@@ -60,10 +60,21 @@
             <div class="container-fluid">
                 <div class="row-fluid">
                     <div class="span4">
-                        <form:checkbox class="form-control" path="srcNonJahiaOnly" name="srcNonJahiaOnly"
-                                       id="srcNonJahiaOnly" value="${environmentInfo.srcNonJahiaOnly}"/>
+                        <form:checkbox class="form-control" path="srcRemoveStore" name="srcRemoveStore"
+                                       id="srcRemoveStore" value="${environmentInfo.srcRemoveStore}"/>
                         <span> <fmt:message
-                                key="lbl.srcNonJahiaOnly"></fmt:message></span>
+                                key="lbl.srcRemoveStore"></fmt:message></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span4">
+                        <form:checkbox class="form-control" path="srcRemoveJahia" name="srcRemoveJahia"
+                                       id="srcNonJahiaOnly" value="${environmentInfo.srcRemoveJahia}"/>
+                        <span> <fmt:message
+                                key="lbl.srcRemoveJahia"></fmt:message></span>
                     </div>
                 </div>
             </div>

@@ -110,9 +110,10 @@ public class ModulesMigrationHandler {
      * Build a report for local modules
      *
      * @param onlyStartedModules Indicates if only started modules will be returned
-     * @param removeJahiaModules Remove Jahia Store modules from report
+     * @param removeJahiaStore Remove Jahia Store modules from report
+     * @param removeJahiaGithub Remove Modules from Jahia organization on Github
      */
-    private void buildReportLocalModules(boolean onlyStartedModules, boolean removeJahiaModules) {
+    private void buildReportLocalModules(boolean onlyStartedModules, boolean removeJahiaStore, boolean removeJahiaGithub) {
 
         Map<Bundle, JahiaTemplatesPackage> installedModules = ServicesRegistry.getInstance()
                 .getJahiaTemplateManagerService().getRegisteredBundles();
@@ -122,18 +123,25 @@ public class ModulesMigrationHandler {
             JahiaTemplatesPackage localJahiaBundle = module.getValue();
 
             String moduleName = localJahiaBundle.getId();
-            String moduleState = localJahiaBundle.getState().toString().toLowerCase();
+            String moduleState = localJahiaBundle.getState().toString();
             String moduleVersion = module.getKey().getVersion().toString();
             String moduleGroupId = localJahiaBundle.getGroupId();
-            String modulescmURI = localJahiaBundle.getScmURI().toLowerCase();
+            String modulescmURI = localJahiaBundle.getScmURI();
             String moduleType = localJahiaBundle.getModuleType();
 
-            if (moduleType.equalsIgnoreCase("module") == false
-                    || (onlyStartedModules == true && moduleState.contains("started") == false)
-                    || (removeJahiaModules == true
-                        && moduleGroupId.equalsIgnoreCase("org.jahia.modules")
-                        && (jahiaStoreModules.contains(moduleName.toLowerCase())
-                            || modulescmURI.contains("scm:git:git@github.com:jahia/")))) {
+            if (moduleType.equalsIgnoreCase("module") == false) {
+                continue;
+            }
+
+            if (onlyStartedModules == true && moduleState.equalsIgnoreCase("started") == false) {
+                continue;
+            }
+
+            if (removeJahiaStore == true && jahiaStoreModules.contains(moduleName.toLowerCase())) {
+                continue;
+            }
+
+            if (removeJahiaGithub == true && modulescmURI.toLowerCase().contains("scm:git:git@github.com:jahia/")) {
                 continue;
             }
 
@@ -279,7 +287,9 @@ public class ModulesMigrationHandler {
         jahiaStoreModules.clear();
 
         loadStoreJahiaModules();
-        buildReportLocalModules(environmentInfo.isSrcStartedOnly(), environmentInfo.isSrcNonJahiaOnly());
+        buildReportLocalModules(environmentInfo.isSrcStartedOnly(),
+                environmentInfo.isSrcRemoveStore(),
+                environmentInfo.isSrcRemoveJahia());
 
         if (this.errorMessage.length() > 0) {
             context.getMessageContext().addMessage(new MessageBuilder().error()
