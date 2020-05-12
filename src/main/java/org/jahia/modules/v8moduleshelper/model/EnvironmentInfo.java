@@ -8,15 +8,16 @@ import java.io.Serializable;
 public class EnvironmentInfo implements Serializable {
     private static final long serialVersionUID = 29383204L;
 
-    private boolean srcNonJahiaOnly;
+    private boolean srcRemoveStore;
     private boolean srcStartedOnly;
+    private boolean srcRemoveJahia;
 
-    public boolean isSrcNonJahiaOnly() {
-        return srcNonJahiaOnly;
+    public boolean isSrcRemoveStore() {
+        return srcRemoveStore;
     }
 
-    public void setSrcNonJahiaOnly(boolean srcNonJahiaOnly) {
-        this.srcNonJahiaOnly = srcNonJahiaOnly;
+    public void setSrcRemoveStore(boolean srcRemoveStore) {
+        this.srcRemoveStore = srcRemoveStore;
     }
 
     public boolean isSrcStartedOnly() {
@@ -25,5 +26,13 @@ public class EnvironmentInfo implements Serializable {
 
     public void setSrcStartedOnly(boolean srcStartedOnly) {
         this.srcStartedOnly = srcStartedOnly;
+    }
+
+    public boolean isSrcRemoveJahia() {
+        return srcRemoveJahia;
+    }
+
+    public void setSrcRemoveJahia(boolean srcRemoveJahia) {
+        this.srcRemoveJahia = srcRemoveJahia;
     }
 }
